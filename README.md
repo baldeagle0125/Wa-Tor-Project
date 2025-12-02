@@ -89,3 +89,16 @@ Final statistics are printed upon completion or termination.
 
 - Go 1.21 or higher
 - Dependencies are managed via go.mod
+
+## Performance Results
+
+See [PERFORMANCE.md](PERFORMANCE.md) for detailed benchmark results including:
+- Execution times for 1, 2, 4, and 8 threads
+- Speedup analysis
+- Parallel efficiency metrics
+- Performance observations and optimization notes
+
+To run your own benchmarks:
+```bash
+./benchmark.sh
+```
