@@ -127,3 +127,24 @@ To run your own benchmarks:
 ```bash
 ./benchmark.sh
 ```
+
+### Optional: Generate Performance Graphs
+
+To generate visual graphs (PNG files) of the benchmark results:
+
+```bash
+# Create a Python virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Generate graphs
+python3 analyze_results.py
+
+# Deactivate venv when done
+deactivate
+```
+
+This will create `execution_time.png` and `speedup.png` visualizing the performance data.

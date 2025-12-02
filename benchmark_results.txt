@@ -1,0 +1,27 @@
+Benchmark Configuration:
+Steps: 1000
+Grid Size: 100x100
+Fish: 2000
+Sharks: 400
+Fish Breed: 10
+Shark Breed: 10
+Starve: 8
+
+================================
+
+Testing with 1 thread(s)...
+  Threads: 1
+  Execution Time: 378.201083ms
+
+Testing with 2 thread(s)...
+  Threads: 2
+  Execution Time: 892.960333ms
+
+Testing with 4 thread(s)...
+  Threads: 4
+  Execution Time: 766.478917ms
+
+Testing with 8 thread(s)...
+  Threads: 8
+  Execution Time: 827.231625ms
+

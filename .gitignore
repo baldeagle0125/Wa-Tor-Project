@@ -5,3 +5,9 @@ wa-tor
 
 # Generated documentation
 docs/
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+*.png

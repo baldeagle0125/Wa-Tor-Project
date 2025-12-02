@@ -13,10 +13,10 @@
 
 | Threads | Execution Time (ms) | Speedup | Efficiency (%) |
 |---------|--------------------:|--------:|---------------:|
-|       1 |             380.41 |   1.00x |         100.0% |
-|       2 |             822.50 |   0.46x |          23.1% |
-|       4 |             705.72 |   0.54x |          13.5% |
-|       8 |             785.94 |   0.48x |           6.1% |
+|       1 |             378.20 |   1.00x |         100.0% |
+|       2 |             892.96 |   0.42x |          21.2% |
+|       4 |             766.48 |   0.49x |          12.3% |
+|       8 |             827.23 |   0.46x |           5.7% |
 
 ### Analysis
 
@@ -30,34 +30,25 @@
 ### Observations
 
 1. **Best Performance**: 1 thread(s) achieved 1.00x speedup
-2. **Single Thread Baseline**: 380.41 ms
+2. **Single Thread Baseline**: 378.20 ms
 3. **Limited Scaling**: The parallel implementation shows limited speedup, likely due to:
-   - Fine-grained locking causing mutex contention
+   - Fine-grained locking causing contention
    - Synchronization overhead exceeding computation benefits
-   - Random entity access patterns reducing cache efficiency
-   - Toroidal world boundaries requiring cross-partition coordination
+   - Random memory access patterns reducing cache efficiency
 
 ### Implementation Notes
 
 The parallel implementation uses:
 - Fine-grained mutex locking per entity operation
 - Random entity processing order (Fisher-Yates shuffle)
-- Work distribution by entity count across thread pool
-- Thread-safe grid updates with moved tracking
+- Work distribution across thread pool
 
 The mutex contention for shared grid access creates a bottleneck that limits
 parallel scaling. This is a common challenge in cellular automaton simulations
-where entities can interact with any neighboring cell, especially in a toroidal
-world where edges wrap around.
+where entities can interact with any neighboring cell.
 
-### Future Optimizations
+## Performance Graphs
 
-Potential improvements for better parallel performance:
-1. **Domain decomposition**: Partition grid into regions with minimal boundary overlap
-2. **Double buffering**: Reduce lock contention with alternating read/write grids
-3. **Lock-free algorithms**: Use atomic operations where possible
-4. **Coarser granularity**: Lock larger grid sections to reduce synchronization overhead
-
-## Benchmark Data
-
-Raw benchmark results are available in `benchmark_results.txt`.
+See the generated PNG files for visual representation:
+- `execution_time.png` - Execution time vs thread count
+- `speedup.png` - Speedup and efficiency vs thread count

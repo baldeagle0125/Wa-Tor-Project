@@ -5,9 +5,6 @@ Analyze Wa-Tor benchmark results and generate performance report with graphs.
 
 import re
 import sys
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend
 
 def parse_results(filename):
     """Parse benchmark results file."""
@@ -129,6 +126,17 @@ See the generated PNG files for visual representation:
 
 def generate_graphs(threads, times, speedups, efficiencies):
     """Generate performance graphs."""
+    
+    # Import matplotlib only when needed
+    try:
+        import matplotlib
+        matplotlib.use('Agg')  # Use non-interactive backend
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("Warning: matplotlib not installed. Skipping graph generation.")
+        print("To generate graphs, install matplotlib:")
+        print("  pip3 install matplotlib")
+        return
     
     # Graph 1: Execution Time
     plt.figure(figsize=(10, 6))
