@@ -123,24 +123,42 @@ func (w *World) Step(threads int) int {
 func (w *World) stepSingle(newGrid [][]Cell, moved [][]bool) int {
 	fishEaten := 0
 
-	// Process sharks first
+	// Collect all entities with their positions
+	type entity struct {
+		y, x int
+		t    CellType
+	}
+
+	entities := make([]entity, 0, w.Height*w.Width)
 	for i := 0; i < w.Height; i++ {
 		for j := 0; j < w.Width; j++ {
-			if w.Grid[i][j].Type == Shark && !moved[i][j] {
-				eaten := w.moveShark(i, j, newGrid, moved)
-				if eaten {
-					fishEaten++
-				}
+			if w.Grid[i][j].Type != Empty {
+				entities = append(entities, entity{i, j, w.Grid[i][j].Type})
 			}
 		}
 	}
 
-	// Then process fish
-	for i := 0; i < w.Height; i++ {
-		for j := 0; j < w.Width; j++ {
-			if w.Grid[i][j].Type == Fish && !moved[i][j] {
-				w.moveFish(i, j, newGrid, moved)
+	// Shuffle entities using Fisher-Yates algorithm for random chronon ordering
+	for i := len(entities) - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		entities[i], entities[j] = entities[j], entities[i]
+	}
+
+	// Process entities in random order, sharks before fish within same priority
+	// First pass: sharks
+	for _, e := range entities {
+		if e.t == Shark && !moved[e.y][e.x] {
+			eaten := w.moveShark(e.y, e.x, newGrid, moved)
+			if eaten {
+				fishEaten++
 			}
+		}
+	}
+
+	// Second pass: fish
+	for _, e := range entities {
+		if e.t == Fish && !moved[e.y][e.x] {
+			w.moveFish(e.y, e.x, newGrid, moved)
 		}
 	}
 
@@ -152,63 +170,92 @@ func (w *World) stepParallel(newGrid [][]Cell, moved [][]bool, threads int) int 
 	var mu sync.Mutex
 	fishEaten := 0
 
-	rowsPerThread := w.Height / threads
-	if rowsPerThread == 0 {
-		rowsPerThread = 1
+	// Collect all entities with their positions
+	type entity struct {
+		y, x int
+		t    CellType
+	}
+
+	entities := make([]entity, 0, w.Height*w.Width)
+	for i := 0; i < w.Height; i++ {
+		for j := 0; j < w.Width; j++ {
+			if w.Grid[i][j].Type != Empty {
+				entities = append(entities, entity{i, j, w.Grid[i][j].Type})
+			}
+		}
+	}
+
+	// Shuffle entities using Fisher-Yates algorithm for random chronon ordering
+	for i := len(entities) - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		entities[i], entities[j] = entities[j], entities[i]
+	}
+
+	// Separate sharks and fish
+	sharks := make([]entity, 0, len(entities)/2)
+	fish := make([]entity, 0, len(entities)/2)
+	for _, e := range entities {
+		switch e.t {
+		case Shark:
+			sharks = append(sharks, e)
+		case Fish:
+			fish = append(fish, e)
+		}
 	}
 
 	// Process sharks in parallel
+	entitiesPerThread := (len(sharks) + threads - 1) / threads
 	for t := range threads {
-		startRow := t * rowsPerThread
-		endRow := startRow + rowsPerThread
-		if t == threads-1 {
-			endRow = w.Height
+		start := t * entitiesPerThread
+		end := start + entitiesPerThread
+		if end > len(sharks) {
+			end = len(sharks)
+		}
+		if start >= len(sharks) {
+			break
 		}
 
 		wg.Add(1)
-		go func(start, end int) {
+		go func(sharkSlice []entity) {
 			defer wg.Done()
 			localEaten := 0
-			for i := start; i < end; i++ {
-				for j := 0; j < w.Width; j++ {
-					mu.Lock()
-					if w.Grid[i][j].Type == Shark && !moved[i][j] {
-						eaten := w.moveShark(i, j, newGrid, moved)
-						if eaten {
-							localEaten++
-						}
+			for _, e := range sharkSlice {
+				mu.Lock()
+				if !moved[e.y][e.x] {
+					eaten := w.moveShark(e.y, e.x, newGrid, moved)
+					if eaten {
+						localEaten++
 					}
-					mu.Unlock()
 				}
+				mu.Unlock()
 			}
 			mu.Lock()
 			fishEaten += localEaten
 			mu.Unlock()
-		}(startRow, endRow)
+		}(sharks[start:end])
 	}
 	wg.Wait()
 
 	// Process fish in parallel
+	entitiesPerThread = (len(fish) + threads - 1) / threads
 	for t := range threads {
-		startRow := t * rowsPerThread
-		endRow := startRow + rowsPerThread
-		if t == threads-1 {
-			endRow = w.Height
+		start := t * entitiesPerThread
+		end := min(start+entitiesPerThread, len(fish))
+		if start >= len(fish) {
+			break
 		}
 
 		wg.Add(1)
-		go func(start, end int) {
+		go func(fishSlice []entity) {
 			defer wg.Done()
-			for i := start; i < end; i++ {
-				for j := 0; j < w.Width; j++ {
-					mu.Lock()
-					if w.Grid[i][j].Type == Fish && !moved[i][j] {
-						w.moveFish(i, j, newGrid, moved)
-					}
-					mu.Unlock()
+			for _, e := range fishSlice {
+				mu.Lock()
+				if !moved[e.y][e.x] {
+					w.moveFish(e.y, e.x, newGrid, moved)
 				}
+				mu.Unlock()
 			}
-		}(startRow, endRow)
+		}(fish[start:end])
 	}
 	wg.Wait()
 
