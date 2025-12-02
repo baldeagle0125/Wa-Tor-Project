@@ -14,9 +14,9 @@ import (
 
 // Colors for rendering
 var (
-	ColorEmpty = color.RGBA{0, 0, 50, 255}
-	ColorFish  = color.RGBA{0, 255, 0, 255}
-	ColorShark = color.RGBA{255, 0, 0, 255}
+	ColorEmpty = color.RGBA{0, 0, 50, 255}  // Dark blue for empty cells
+	ColorFish  = color.RGBA{0, 255, 0, 255} // Green for fish
+	ColorShark = color.RGBA{255, 0, 0, 255} // Red for sharks
 )
 
 // Game implements ebiten.Game interface

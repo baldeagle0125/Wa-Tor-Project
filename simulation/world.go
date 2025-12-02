@@ -207,10 +207,7 @@ func (w *World) stepParallel(newGrid [][]Cell, moved [][]bool, threads int) int 
 	entitiesPerThread := (len(sharks) + threads - 1) / threads
 	for t := range threads {
 		start := t * entitiesPerThread
-		end := start + entitiesPerThread
-		if end > len(sharks) {
-			end = len(sharks)
-		}
+		end := min(start+entitiesPerThread, len(sharks))
 		if start >= len(sharks) {
 			break
 		}
