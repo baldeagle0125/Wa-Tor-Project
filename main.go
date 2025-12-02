@@ -5,9 +5,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/baldeagle0125/Wa-Tor-Project/config"
-	"github.com/baldeagle0125/Wa-Tor-Project/rendering"
-	"github.com/baldeagle0125/Wa-Tor-Project/simulation"
+	"wa-tor/config"
+	"wa-tor/rendering"
+	"wa-tor/simulation"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 

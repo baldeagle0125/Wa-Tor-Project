@@ -1,4 +1,4 @@
-module github.com/baldeagle0125/Wa-Tor-Project
+module wa-tor
 
 go 1.25.4
 

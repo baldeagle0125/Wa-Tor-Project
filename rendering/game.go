@@ -5,7 +5,8 @@ import (
 	"image/color"
 	"time"
 
-	"github.com/baldeagle0125/Wa-Tor-Project/simulation"
+	"wa-tor/simulation"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
