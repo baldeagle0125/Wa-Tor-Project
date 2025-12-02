@@ -53,18 +53,26 @@ func (g *Game) Update() error {
 		return nil
 	}
 
+	// Check if max steps reached
+	if g.maxSteps > 0 && g.step >= g.maxSteps {
+		fmt.Printf("\nReached max steps: %d\n", g.step)
+		g.ended = true
+		g.endReason = "Max steps reached"
+		return ebiten.Termination
+	}
+
 	fish, sharks := g.world.Count()
 	if fish == 0 {
 		fmt.Printf("\nAll fish died at step %d\n", g.step)
 		g.ended = true
 		g.endReason = "All fish died"
-		return nil
+		return ebiten.Termination
 	}
 	if sharks == 0 {
 		fmt.Printf("\nAll sharks died at step %d\n", g.step)
 		g.ended = true
 		g.endReason = "All sharks died"
-		return nil
+		return ebiten.Termination
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeySpace) {
