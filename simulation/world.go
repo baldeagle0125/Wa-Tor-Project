@@ -171,16 +171,14 @@ func (w *World) stepParallel(newGrid [][]Cell, moved [][]bool, threads int) int 
 			localEaten := 0
 			for i := start; i < end; i++ {
 				for j := 0; j < w.Width; j++ {
-					if w.Grid[i][j].Type == Shark {
-						mu.Lock()
-						if !moved[i][j] {
-							eaten := w.moveShark(i, j, newGrid, moved)
-							if eaten {
-								localEaten++
-							}
+					mu.Lock()
+					if w.Grid[i][j].Type == Shark && !moved[i][j] {
+						eaten := w.moveShark(i, j, newGrid, moved)
+						if eaten {
+							localEaten++
 						}
-						mu.Unlock()
 					}
+					mu.Unlock()
 				}
 			}
 			mu.Lock()
@@ -203,13 +201,11 @@ func (w *World) stepParallel(newGrid [][]Cell, moved [][]bool, threads int) int 
 			defer wg.Done()
 			for i := start; i < end; i++ {
 				for j := 0; j < w.Width; j++ {
-					if w.Grid[i][j].Type == Fish {
-						mu.Lock()
-						if !moved[i][j] {
-							w.moveFish(i, j, newGrid, moved)
-						}
-						mu.Unlock()
+					mu.Lock()
+					if w.Grid[i][j].Type == Fish && !moved[i][j] {
+						w.moveFish(i, j, newGrid, moved)
 					}
+					mu.Unlock()
 				}
 			}
 		}(startRow, endRow)

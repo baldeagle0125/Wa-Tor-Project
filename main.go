@@ -76,7 +76,7 @@ func runHeadless(world *simulation.World, cfg *config.Config) {
 
 	for step := 0; step < cfg.Steps; step++ {
 		fish, sharks := world.Count()
-		
+
 		// Check termination conditions
 		if fish == 0 {
 			fmt.Printf("\nAll fish died at step %d\n", step)
@@ -94,7 +94,7 @@ func runHeadless(world *simulation.World, cfg *config.Config) {
 
 	elapsed := time.Since(startTime)
 	fish, sharks := world.Count()
-	
+
 	// Print final statistics
 	fmt.Printf("\nSimulation completed\n")
 	fmt.Printf("Steps completed: %d\n", cfg.Steps)
