@@ -17,6 +17,31 @@ Wa-Tor is a population dynamics simulation of predators (sharks) and prey (fish)
 go build -o wa-tor
 ```
 
+## Documentation
+
+Generate API documentation with Doxygen (requires Doxygen to be installed):
+```bash
+# Install Doxygen (if not already installed)
+# macOS: brew install doxygen
+# Linux: sudo apt-get install doxygen
+
+doxygen Doxyfile
+```
+
+The generated documentation will be in the `docs/html` directory. Open `docs/html/index.html` in a browser.
+
+Alternatively, use native Go documentation (no installation required):
+```bash
+# View specific package documentation
+go doc ./config
+go doc ./simulation
+go doc ./rendering
+
+# Or run godoc server (requires: go install golang.org/x/tools/cmd/godoc@latest)
+godoc -http=:6060
+# Then visit http://localhost:6060/pkg/wa-tor/
+```
+
 ## Running
 
 ### Interactive Mode (with visualization)

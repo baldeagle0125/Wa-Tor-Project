@@ -1,1 +1,7 @@
 .DS_Store
+
+# Build artifacts
+wa-tor
+
+# Generated documentation
+docs/
